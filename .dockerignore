@@ -1,0 +1,17 @@
+client/dist
+
+# Go
+vendor
+
+# Logs and binaries
+*.log
+
+# Development & Build
+.DS_Store
+.git
+.gitignore
+.dockerignore
+*/Dockerfile*
+
+# Test files and documentation
+./server/*_test.go
