@@ -2,6 +2,6 @@
 /build
 /bin/*
 /dist
-
+./server/tmp
 /.env
 

@@ -6,4 +6,4 @@ build:
 	ENV=prod go build -buildvcs=false -o ./bin/aircup ./main.go
 
 dev:
-	cd client && yarn dev & air && fg
+	cd client && yarn dev & ENV=dev  air && fg

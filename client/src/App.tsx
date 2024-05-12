@@ -1,11 +1,39 @@
 import "@/index.css";
-import { Button } from "./components/ui/button";
+import { LoginForm } from "./components/sign-up/LoginForm";
+import { fetcher } from "./api-handler";
+import useSWR from "swr";
+import { ConfigRes } from "./api-handler/types/Config";
+import { Loader } from "./components/loader/Loader";
+import ErrorDisplay from "./components/errorDisplay/ErrorDisplay";
 function App() {
+  const apiUrl = import.meta.env.VITE_API_URL + "/config";
+  const {
+    data: configData,
+    error,
+    isLoading,
+  } = useSWR(apiUrl, fetcher<ConfigRes>);
+  if (error)
+    return (
+      <ErrorDisplay message="Failed to load data. Please try again later." />
+    );
+
+  if (isLoading)
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader />
+      </div>
+    );
+  if (!configData || configData.type === "NO_ACCOUNT")
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <LoginForm />
+      </div>
+    );
+
   return (
-    <>
-      <h1 className="text-4xl font-bold italic underline">Hello AirCup</h1>
-      <Button variant="outline">Button</Button>
-    </>
+    <div>
+      <h1>dashboard</h1>
+    </div>
   );
 }
 

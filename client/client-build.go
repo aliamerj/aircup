@@ -12,7 +12,7 @@ import (
 )
 
 var (
-  //go:embed dist/*
+	//go:embed dist/*
 	dist embed.FS
 
 	//go:embed dist/index.html
@@ -22,8 +22,8 @@ var (
 	distIndexHTML = echo.MustSubFS(indexHTML, "dist")
 )
 
-func ClientRun(e *echo.Echo){
-  	if os.Getenv("ENV") == "dev" {
+func ClientRun(e *echo.Echo) {
+	if os.Getenv("ENV") == "dev" {
 		log.Println("Running in dev mode")
 		setupDevProxy(e)
 		return
