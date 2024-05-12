@@ -21,5 +21,5 @@ func main() {
 	// Setup the server (backend) handlers
 	server.ServerRun(e)
 	// Setup the API Group
-	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", 3000)))
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", 5000)))
 }

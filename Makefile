@@ -1,5 +1,5 @@
 install:
-	cd client && yarn install
+	go mod download && cd client && yarn install
 
 build:
 	cd client && yarn build

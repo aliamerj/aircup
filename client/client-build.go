@@ -34,7 +34,7 @@ func ClientRun(e *echo.Echo){
 }
 
 func setupDevProxy(e *echo.Echo) {
-	url, err := url.Parse("http://localhost:5173")
+	url, err := url.Parse("http://localhost:3000")
 	if err != nil {
 		log.Fatal(err)
 	}
