@@ -26,6 +26,6 @@ func ConfigDB() *gorm.DB {
 	if err != nil {
 		panic("failed to connect database : " + err.Error())
 	}
-	db.AutoMigrate(&modules.Account{}, &modules.Disk{})
+	db.AutoMigrate(&modules.Account{}, &modules.Disk{}, &modules.Session{})
 	return db
 }
