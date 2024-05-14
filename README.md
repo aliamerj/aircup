@@ -30,3 +30,16 @@ AirCup is an open-source cloud storage platform designed to meet the increasing 
 
 ## Contributing
 We welcome contributions to AirCup! If you'd like to help improve the platform, please fork the repository and create a pull request with your changes. Ensure that your code adheres to our coding standards and includes relevant tests
+
+1. **Clone the repository**
+2. **Install packages:**  ```bash make install```
+3. **Set up the environment variables:*
+   - Copy the `.env.example` file to .env and adjust any necessary configurations.
+   - Ensure your .env file is correctly set up for your development environment.
+5. **Run the development environment:** ``` make dev ``` This will run both the server and the client side of the application.
+6. **Compile the app and create the binary:** ``` make build ``` The compiled binary version will be located in a folder called bin in the root directory.
+
+
+
+
+
