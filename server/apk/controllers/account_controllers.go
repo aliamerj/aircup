@@ -69,7 +69,7 @@ func Register(c echo.Context, db *gorm.DB) error {
 	c.SetCookie(&http.Cookie{
 		Name:     "accessToken",
 		Value:    accessToken,
-		Expires:  accessTokenExp,
+		Expires:  refreshTokenExp,
 		HttpOnly: true,
 		Secure:   true, // Set to true in production
 		Path:     "/",
@@ -136,7 +136,7 @@ func Login(c echo.Context, db *gorm.DB) error {
 	c.SetCookie(&http.Cookie{
 		Name:     "accessToken",
 		Value:    accessToken,
-		Expires:  accessTokenExp,
+		Expires:  refreshTokenExp,
 		HttpOnly: true,
 		Secure:   true, // Set to true in production
 		Path:     "/",
@@ -160,6 +160,43 @@ func Login(c echo.Context, db *gorm.DB) error {
 		"email":     account.Email,
 	},
 	))
+}
+
+func Logout(c echo.Context, db *gorm.DB) error {
+	// Retrieve the refresh token from the cookies
+	refreshTokenCookie, err := c.Cookie("refreshToken")
+	if err == nil {
+		// Try to delete the session from the database using the refresh token
+		if err := db.Where("refresh_token = ?", refreshTokenCookie.Value).Delete(&modules.Session{}).Error; err != nil {
+			if !errors.Is(err, gorm.ErrRecordNotFound) {
+				return err
+			}
+		}
+	}
+
+	// Clear the access token cookie
+	c.SetCookie(&http.Cookie{
+		Name:     "accessToken",
+		Value:    "",
+		Expires:  time.Unix(0, 0), // Set the cookie to expire in the past
+		HttpOnly: true,
+		Secure:   true,
+		Path:     "/",
+		SameSite: http.SameSiteStrictMode,
+	})
+
+	// Clear the refresh token cookie
+	c.SetCookie(&http.Cookie{
+		Name:     "refreshToken",
+		Value:    "",
+		Expires:  time.Unix(0, 0), // Set the cookie to expire in the past
+		HttpOnly: true,
+		Secure:   true,
+		Path:     "/",
+		SameSite: http.SameSiteStrictMode,
+	})
+
+	return c.JSON(http.StatusOK, utility.SuccesRespnse("Logout success", resType.Logout, nil))
 }
 
 func VerifySession(c echo.Context, db *gorm.DB) error {
@@ -210,7 +247,7 @@ func refreshAccessToken(c echo.Context, db *gorm.DB) error {
 	if jwtSecret == "" {
 		return errors.New("JWT_SECRET in .env is missing")
 	}
-
+	refreshTokenExp := time.Now().Add(7 * 24 * time.Hour)
 	newAccessToken, err := generateTokenWithClaims(newClaims, jwtSecret)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate new access token")
@@ -220,7 +257,7 @@ func refreshAccessToken(c echo.Context, db *gorm.DB) error {
 	c.SetCookie(&http.Cookie{
 		Name:     "accessToken",
 		Value:    newAccessToken,
-		Expires:  time.Now().Add(time.Hour * 1),
+		Expires:  refreshTokenExp,
 		HttpOnly: true,
 		Secure:   true, // Set to true in production
 		Path:     "/",

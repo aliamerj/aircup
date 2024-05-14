@@ -6,4 +6,5 @@ const (
 	AccountCreated ResType = "ACCOUNT_CREATED"
 	Login          ResType = "LOGIN"
 	Refresh        ResType = "REFRESH"
+	Logout         ResType = "LOGOUT"
 )

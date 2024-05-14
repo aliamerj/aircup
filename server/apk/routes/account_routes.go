@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"errors"
 	"os"
 
 	"github.com/aliamerj/aircup/server/apk/controllers"
@@ -24,11 +25,24 @@ func AccountRoutes(route *echo.Group, db *gorm.DB) {
 			return controllers.Login(c, db)
 		})
 
-		authRoute.Use(echojwt.WithConfig(echojwt.Config{SigningKey: []byte(os.Getenv("JWT_SECRET")), SigningMethod: "HS256", TokenLookup: "cookie:accessToken", NewClaimsFunc: func(c echo.Context) jwt.Claims {
-			return new(utility.JwtAuthClaims)
-		}}))
+		authRoute.Use(echojwt.WithConfig(echojwt.Config{
+			SigningKey:    []byte(os.Getenv("JWT_SECRET")),
+			SigningMethod: "HS256",
+			TokenLookup:   "cookie:accessToken",
+			ErrorHandler: func(c echo.Context, err error) error {
+				if errors.Is(err, jwt.ErrTokenExpired) {
+					return controllers.VerifySession(c, db)
+				}
+				return err
+			},
+			NewClaimsFunc: func(c echo.Context) jwt.Claims {
+				return new(utility.JwtAuthClaims)
+			}}))
 		authRoute.GET("/me", func(c echo.Context) error {
 			return controllers.VerifySession(c, db)
+		})
+		authRoute.POST("/logout", func(c echo.Context) error {
+			return controllers.Logout(c, db)
 		})
 	}
 
