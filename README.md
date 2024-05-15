@@ -19,7 +19,6 @@ AirCup is an open-source cloud storage platform designed to meet the increasing 
 - **Real-Time Collaboration:** Share and work on documents in real time.
 - **Superior Performance:** Efficient handling of large data transfers, reducing latency and downtime.
 - **Flexible Scalability:** Dynamically adjust your storage needs and pay only for what you use.
-- **Cost-Effective:** Competitive pricing models and customizable plans for businesses of all sizes.
 - **Regulatory Compliance:** Built-in features to ensure compliance with global data protection regulations.
 
 ## Technology Stack
