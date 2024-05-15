@@ -1,6 +1,10 @@
 package modules
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Account struct {
 	gorm.Model
@@ -13,7 +17,7 @@ type Account struct {
 type Session struct {
 	AccountID    uint   `gorm:"foreignKey;not null;index;constraint:OnDelete:CASCADE;"`
 	RefreshToken string `gorm:"primaryKey;size:512"`
-	ExpiresAt    int64  `gorm:"index"`
+	ExpiresAt    time.Time  `gorm:"index"`
 }
 
 type LoginCredentials struct {

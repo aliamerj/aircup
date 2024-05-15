@@ -59,7 +59,7 @@ func Register(c echo.Context, db *gorm.DB) error {
 
 	// Update or create session record
 	var session modules.Session
-	upsertData := modules.Session{RefreshToken: refreshToken, ExpiresAt: refreshTokenExp.Unix()}
+	upsertData := modules.Session{RefreshToken: refreshToken, ExpiresAt: refreshTokenExp}
 	result := db.Where(modules.Session{AccountID: account.ID}).Assign(upsertData).FirstOrCreate(&session)
 	if result.Error != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Could not update or create refresh token session")
@@ -126,7 +126,7 @@ func Login(c echo.Context, db *gorm.DB) error {
 
 	// Update or create session record
 	var session modules.Session
-	upsertData := modules.Session{RefreshToken: refreshToken, ExpiresAt: refreshTokenExp.Unix()}
+	upsertData := modules.Session{RefreshToken: refreshToken, ExpiresAt: refreshTokenExp}
 	result := db.Where(modules.Session{AccountID: account.ID}).Assign(upsertData).FirstOrCreate(&session)
 	if result.Error != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Could not update or create refresh token session")
@@ -232,7 +232,7 @@ func refreshAccessToken(c echo.Context, db *gorm.DB) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid refresh token")
 	}
 
-	if session.ExpiresAt < time.Now().Unix() {
+	if session.ExpiresAt.Unix() < time.Now().Unix() {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Refresh token expired")
 	}
 
@@ -240,14 +240,13 @@ func refreshAccessToken(c echo.Context, db *gorm.DB) error {
 	newClaims := &utility.JwtAuthClaims{
 		AccountID: session.AccountID,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 1)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 15)),
 		},
 	}
 	jwtSecret := os.Getenv("JWT_SECRET")
 	if jwtSecret == "" {
 		return errors.New("JWT_SECRET in .env is missing")
 	}
-	refreshTokenExp := time.Now().Add(7 * 24 * time.Hour)
 	newAccessToken, err := generateTokenWithClaims(newClaims, jwtSecret)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate new access token")
@@ -257,7 +256,7 @@ func refreshAccessToken(c echo.Context, db *gorm.DB) error {
 	c.SetCookie(&http.Cookie{
 		Name:     "accessToken",
 		Value:    newAccessToken,
-		Expires:  refreshTokenExp,
+		Expires:  session.ExpiresAt,
 		HttpOnly: true,
 		Secure:   true, // Set to true in production
 		Path:     "/",
