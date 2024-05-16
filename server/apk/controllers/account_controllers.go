@@ -71,7 +71,7 @@ func Register(c echo.Context, db *gorm.DB) error {
 		Value:    accessToken,
 		Expires:  refreshTokenExp,
 		HttpOnly: true,
-		Secure:   true, // Set to true in production
+		Secure:   true,
 		Path:     "/",
 		SameSite: http.SameSiteStrictMode,
 	})
@@ -208,7 +208,7 @@ func VerifySession(c echo.Context, db *gorm.DB) error {
 	claims, ok := user.Claims.(*utility.JwtAuthClaims)
 	if !ok || !user.Valid {
 		// Access token is invalid or claims are not correct, try to refresh it
-		return refreshAccessToken(c, db)
+		return RefreshAccessToken(c, db)
 	}
 
 	// If the access token is still valid, return the user info
@@ -220,7 +220,7 @@ func VerifySession(c echo.Context, db *gorm.DB) error {
 	}))
 }
 
-func refreshAccessToken(c echo.Context, db *gorm.DB) error {
+func RefreshAccessToken(c echo.Context, db *gorm.DB) error {
 	refreshTokenCookie, err := c.Cookie("refreshToken")
 	if err != nil || refreshTokenCookie.Value == "" {
 		return echo.NewHTTPError(http.StatusUnauthorized, "No refresh token provided")
@@ -235,10 +235,17 @@ func refreshAccessToken(c echo.Context, db *gorm.DB) error {
 	if session.ExpiresAt.Unix() < time.Now().Unix() {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Refresh token expired")
 	}
+	var account modules.Account
+	if err := db.First(&account, session.AccountID).Error; err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get Account info")
+	}
 
 	// Generate a new access token
 	newClaims := &utility.JwtAuthClaims{
 		AccountID: session.AccountID,
+		Email:     account.Email,
+		FirstName: account.FirstName,
+		LastName:  account.LastName,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 15)),
 		},

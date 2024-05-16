@@ -5,7 +5,7 @@ import (
 )
 
 type JwtAuthClaims struct {
-	AccountID uint   `json:"account_id"`
+	AccountID uint   `json:"id"`
 	Email     string `json:"email"`
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`

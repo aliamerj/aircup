@@ -45,6 +45,7 @@ func ServerRun(e *echo.Echo) {
 		}))
 		api.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(20)))
 		routes.AccountRoutes(api, configDB)
+		routes.DiskRoutes(api, configDB)
 	}
 
 	// Basic APi endpoint
