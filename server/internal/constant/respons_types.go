@@ -7,4 +7,6 @@ const (
 	Login          ResType = "LOGIN"
 	Refresh        ResType = "REFRESH"
 	Logout         ResType = "LOGOUT"
+	GetDisks       ResType = "GETDISKS"
+	GetDirInfo     ResType = "GETDIRINFO"
 )

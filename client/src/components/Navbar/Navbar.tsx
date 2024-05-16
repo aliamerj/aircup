@@ -24,6 +24,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import logo from "@/assets/logo.svg";
 import { logout } from "@/api-handler/auth-actions";
+import { ModeToggle } from "../modeToggle/mode-toggle";
 export const Navbar = () => {
   const navigate = useNavigate();
   const onLogout = async () => {
@@ -40,13 +41,16 @@ export const Navbar = () => {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="flex flex-col">
-          <nav className="grid gap-2 text-lg font-medium">
-            <Link
-              to="#"
-              className="flex items-center gap-2 text-lg font-semibold"
-            >
+          <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+            <Link to="/" className="flex items-center gap-2 font-semibold">
               <img className="h-12 w-full" src={logo} />
             </Link>
+
+            <div className="ml-auto h-8 w-8">
+              <ModeToggle />
+            </div>
+          </div>{" "}
+          <nav className="grid gap-2 text-lg font-medium">
             <Link
               to="#"
               className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"

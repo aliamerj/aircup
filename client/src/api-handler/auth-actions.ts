@@ -1,5 +1,4 @@
 import { AuthSchema } from "@/schema/user";
-import { redirect } from "react-router-dom";
 import { z } from "zod";
 export type User = z.infer<typeof AuthSchema>;
 export async function getSession(): Promise<User | null> {

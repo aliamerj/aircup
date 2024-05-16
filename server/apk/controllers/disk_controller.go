@@ -9,6 +9,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/aliamerj/aircup/server/apk/modules"
+	resType "github.com/aliamerj/aircup/server/internal/constant"
+	"github.com/aliamerj/aircup/server/internal/utility"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
@@ -29,6 +32,26 @@ type FileInfo struct {
 	ModifiedTime *time.Time `json:"modifiedTime"`
 }
 
+func GetSavedDisk(c echo.Context, db *gorm.DB) error {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		panic("Cannot find the user's home directory: " + err.Error())
+	}
+	disk := modules.Disk{
+		DiskPath: homeDir,
+	}
+	if err := db.Create(&disk).Error; err != nil {
+		if !strings.Contains(err.Error(), "UNIQUE constraint failed: disks.disk_path") {
+			return err
+		}
+	}
+	var disks []modules.Disk
+	if err := db.Find(&disks).Error; err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, utility.SuccesRespnse("Fetch Succesfully", resType.GetDisks, disks))
+}
+
 func GetDirInfo(c echo.Context, db *gorm.DB) error {
 	path := c.QueryParam("path")
 	if path == "" {
@@ -37,10 +60,19 @@ func GetDirInfo(c echo.Context, db *gorm.DB) error {
 	// Get directory details
 	dirInfo, err := getDirectoryInfo(path)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return err
+	}
+	disk := modules.Disk{
+		DiskPath: strings.TrimRight(path, "/"),
+	}
+	if err := db.Create(&disk).Error; err != nil {
+		if !strings.Contains(err.Error(), "UNIQUE constraint failed: disks.disk_path") {
+			return err
+		}
+		return c.JSON(http.StatusOK, utility.SuccesRespnse("Fetch Succesfully", resType.GetDirInfo, dirInfo))
 	}
 
-	return c.JSON(http.StatusOK, dirInfo)
+	return c.JSON(http.StatusOK, utility.SuccesRespnse("Fetch Succesfully", resType.GetDirInfo, dirInfo))
 }
 
 func getDirectoryInfo(path string) (*DirectoryInfo, error) {
@@ -48,14 +80,15 @@ func getDirectoryInfo(path string) (*DirectoryInfo, error) {
 	files, err := os.ReadDir(path)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			return nil, fmt.Errorf("directory not found")
+			return nil, echo.NewHTTPError(http.StatusBadRequest, "directory not found")
 		}
-		return nil, fmt.Errorf("failed to read directory: %v", err)
+		return nil, echo.NewHTTPError(http.StatusInternalServerError, "failed to read directory")
+
 	}
 	// Get disk usage info
 	var stat syscall.Statfs_t
 	if err := syscall.Statfs(path, &stat); err != nil {
-		return nil, fmt.Errorf("failed to get disk info: %v", err)
+		return nil, echo.NewHTTPError(http.StatusInternalServerError, "failed to get disk info")
 	}
 
 	total := 0

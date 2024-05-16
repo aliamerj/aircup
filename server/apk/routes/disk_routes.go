@@ -10,8 +10,11 @@ func DiskRoutes(route *echo.Group, db *gorm.DB) {
 	diskRoute := route.Group("/disk")
 	//  diskRoute.Use(middlewares.JWTAuth(db))
 	{
-		diskRoute.GET("", func(c echo.Context) error {
+		diskRoute.GET("/reload", func(c echo.Context) error {
 			return controllers.GetDirInfo(c, db)
+		})
+		diskRoute.GET("", func(c echo.Context) error {
+			return controllers.GetSavedDisk(c, db)
 		})
 
 	}

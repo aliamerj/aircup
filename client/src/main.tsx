@@ -13,6 +13,7 @@ import { Toaster } from "./components/ui/toaster.tsx";
 import { Login } from "./routes/login.tsx";
 import { getSession } from "./api-handler/auth-actions.ts";
 import { Dashboard } from "./routes/Dashboard.tsx";
+import { getSavedDisks } from "./api-handler/disk-actions.ts";
 
 const router = createBrowserRouter([
   {
@@ -22,7 +23,8 @@ const router = createBrowserRouter([
       if (!user) {
         throw redirect("/login");
       }
-      return user;
+      const disks = await getSavedDisks();
+      return disks;
     },
     element: <Dashboard />,
     errorElement: <ErrorDisplay message="404 Page not found" />,
