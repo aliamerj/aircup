@@ -1,7 +1,6 @@
 package routes
 
 import (
-
 	"github.com/aliamerj/aircup/server/apk/controllers"
 	"github.com/aliamerj/aircup/server/apk/middlewares"
 	"github.com/labstack/echo/v4"
@@ -21,13 +20,12 @@ func AccountRoutes(route *echo.Group, db *gorm.DB) {
 			return controllers.Login(c, db)
 		})
 
-		authRoute.Use(middlewares.JWTAuth(db))
 		authRoute.GET("/me", func(c echo.Context) error {
 			return controllers.VerifySession(c, db)
-		})
+		}, middlewares.JWTAuth(db))
 		authRoute.POST("/logout", func(c echo.Context) error {
 			return controllers.Logout(c, db)
-		})
+		}, middlewares.JWTAuth(db))
 	}
 
 }

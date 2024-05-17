@@ -7,12 +7,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Disks } from "@/schema/disk";
 import { useLoaderData } from "react-router-dom";
 import { useState } from "react";
 import NewDiskInput from "../newDiskInput/NewDiskInput";
+import { SavedDiskPaths } from "@/schema/disk_path";
 export const SelectDisk = () => {
-  const [paths, __addNewFolder] = useState(useLoaderData() as Disks);
+  const [paths, addNewFolder] = useState<SavedDiskPaths>(
+    useLoaderData() as SavedDiskPaths,
+  );
+  const addNewDir = (newPath: string) => {
+    addNewFolder((current) => [...current, { disk_path: newPath }]);
+  };
   return (
     <Select>
       <SelectTrigger className="w-1/4">
@@ -27,7 +32,7 @@ export const SelectDisk = () => {
             </SelectItem>
           ))}
 
-          <NewDiskInput />
+          <NewDiskInput addNewDir={addNewDir} />
         </SelectGroup>
       </SelectContent>
     </Select>

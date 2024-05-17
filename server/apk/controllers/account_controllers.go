@@ -210,7 +210,6 @@ func VerifySession(c echo.Context, db *gorm.DB) error {
 		// Access token is invalid or claims are not correct, try to refresh it
 		return RefreshAccessToken(c, db)
 	}
-
 	// If the access token is still valid, return the user info
 	return c.JSON(http.StatusOK, utility.SuccesRespnse("Token valid", resType.Refresh, map[string]string{
 		"id":        fmt.Sprintf("%v", claims.AccountID),

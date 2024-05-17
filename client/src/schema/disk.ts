@@ -1,10 +1,17 @@
 import { z } from "zod";
 
+const FileSchema = z.object({
+  name: z.string(),
+  path: z.string(),
+  size: z.string(),
+  extension: z.string(),
+  modifiedTime: z.string(),
+});
 export const DiskSchema = z.object({
-  disk_path: z.string(),
+  path: z.string(),
+  totalSize: z.string(),
+  availableSize: z.string(),
+  contents: z.array(FileSchema),
 });
 
-export const DisksSchema = z.array(DiskSchema);
-
-export type Disk = z.infer<typeof DiskSchema>;
-export type Disks = z.infer<typeof DisksSchema>;
+export type Disks = z.infer<typeof DiskSchema>;

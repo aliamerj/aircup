@@ -9,4 +9,5 @@ const (
 	Logout         ResType = "LOGOUT"
 	GetDisks       ResType = "GETDISKS"
 	GetDirInfo     ResType = "GETDIRINFO"
+	AvailablePath  ResType = "AVAILABLEPATH"
 )

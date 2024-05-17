@@ -18,7 +18,6 @@ import (
 
 type DirectoryInfo struct {
 	Path          string     `json:"path"`
-	Name          string     `json:"name"`
 	TotalSize     string     `json:"totalSize"`
 	AvailableSize string     `json:"availableSize"`
 	Contents      []FileInfo `json:"contents"`
@@ -30,6 +29,39 @@ type FileInfo struct {
 	Size         *string    `json:"size"`
 	Extension    *string    `json:"extension"`
 	ModifiedTime *time.Time `json:"modifiedTime"`
+}
+
+func CheckdirPath(c echo.Context, db *gorm.DB) error {
+	path := c.QueryParam("path")
+	if path == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "Path is required")
+	}
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return echo.NewHTTPError(http.StatusBadRequest, "Path not exist")
+	}
+
+	return c.JSON(http.StatusOK, utility.SuccesRespnse("path is available", resType.AvailablePath, true))
+}
+func SaveNewDirPath(c echo.Context, db *gorm.DB) error {
+	path := c.QueryParam("path")
+	if path == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "Path is required")
+	}
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return echo.NewHTTPError(http.StatusBadRequest, "Path not exist")
+	}
+
+	disk := modules.Disk{
+		DiskPath: path,
+	}
+	if err := db.Create(&disk).Error; err != nil {
+		if strings.Contains(err.Error(), "UNIQUE constraint failed: disks.disk_path") {
+			return echo.NewHTTPError(http.StatusBadRequest, "Path already exist")
+		}
+
+		return err
+	}
+	return c.JSON(http.StatusOK, utility.SuccesRespnse("saved path", resType.AvailablePath, true))
 }
 
 func GetSavedDisk(c echo.Context, db *gorm.DB) error {
@@ -135,7 +167,6 @@ func getDirectoryInfo(path string) (*DirectoryInfo, error) {
 
 	dirInfo := &DirectoryInfo{
 		Path:          path,
-		Name:          path,
 		TotalSize:     humanReadableSize(int64(total)),
 		AvailableSize: humanReadableSize(int64(available)),
 		Contents:      contents,

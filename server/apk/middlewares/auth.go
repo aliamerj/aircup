@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"errors"
+	"net/http"
 	"os"
 
 	"github.com/aliamerj/aircup/server/apk/controllers"
@@ -21,10 +22,9 @@ func JWTAuth(db *gorm.DB) echo.MiddlewareFunc {
 			if errors.Is(err, jwt.ErrTokenExpired) {
 				return controllers.RefreshAccessToken(c, db)
 			}
-			return err
+			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid or expired token")
 		},
 		NewClaimsFunc: func(c echo.Context) jwt.Claims {
 			return new(utility.JwtAuthClaims)
 		}})
-
 }
