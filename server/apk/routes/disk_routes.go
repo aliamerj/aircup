@@ -8,7 +8,7 @@ import (
 )
 
 func DiskRoutes(route *echo.Group, db *gorm.DB) {
-	diskRoute := route.Group("/disk", middlewares.JWTAuth(db))
+	diskRoute := route.Group("/disk", middlewares.JWTAuthorization())
 	{
 		diskRoute.GET("", func(c echo.Context) error {
 			return controllers.GetSavedDisk(c, db)

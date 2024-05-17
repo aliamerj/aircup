@@ -11,7 +11,12 @@ import { useLoaderData } from "react-router-dom";
 import { useState } from "react";
 import NewDiskInput from "../newDiskInput/NewDiskInput";
 import { SavedDiskPaths } from "@/schema/disk_path";
-export const SelectDisk = () => {
+
+export const SelectDisk = ({
+  selectDiskPath,
+}: {
+  selectDiskPath: (diskPath: string) => void;
+}) => {
   const [paths, addNewFolder] = useState<SavedDiskPaths>(
     useLoaderData() as SavedDiskPaths,
   );
@@ -19,7 +24,7 @@ export const SelectDisk = () => {
     addNewFolder((current) => [...current, { disk_path: newPath }]);
   };
   return (
-    <Select>
+    <Select onValueChange={selectDiskPath}>
       <SelectTrigger className="w-1/4">
         <SelectValue placeholder="Select Folder or disk" />
       </SelectTrigger>

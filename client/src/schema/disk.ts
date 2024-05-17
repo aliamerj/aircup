@@ -4,7 +4,7 @@ const FileSchema = z.object({
   name: z.string(),
   path: z.string(),
   size: z.string(),
-  extension: z.string(),
+  extension: z.string().nullable(),
   modifiedTime: z.string(),
 });
 export const DiskSchema = z.object({
@@ -14,4 +14,4 @@ export const DiskSchema = z.object({
   contents: z.array(FileSchema),
 });
 
-export type Disks = z.infer<typeof DiskSchema>;
+export type Disk = z.infer<typeof DiskSchema>;

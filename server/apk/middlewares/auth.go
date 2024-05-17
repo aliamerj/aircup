@@ -28,3 +28,13 @@ func JWTAuth(db *gorm.DB) echo.MiddlewareFunc {
 			return new(utility.JwtAuthClaims)
 		}})
 }
+
+func JWTAuthorization() echo.MiddlewareFunc {
+	return echojwt.WithConfig(echojwt.Config{
+		SigningKey:  []byte(os.Getenv("JWT_SECRET")),
+		TokenLookup: "cookie:accessToken",
+		NewClaimsFunc: func(c echo.Context) jwt.Claims {
+			return new(utility.JwtAuthClaims)
+		}})
+
+}
