@@ -3,7 +3,7 @@
 <div align="center">
   <img src="https://github.com/aliamerj/aircup/blob/main/client/src/assets/logo.svg" alt="AirCup">
      <h3>AirCup</h3>
-  <p><strong>The Nextcloud and ownCloud Alternative: The Future of Cloud Storage</strong></p>
+  <p><strong>The Nextcloud Alternative: The Future of Cloud Storage</strong></p>
 </div>
 
 <br/>
