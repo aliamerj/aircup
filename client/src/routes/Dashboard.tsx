@@ -7,10 +7,14 @@ import { loadDisk } from "@/api-handler/disk-actions";
 import { Loader } from "@/components/loader/Loader";
 
 import { FileDisplayer } from "@/components/fileDisplayer/FileDisplayer";
+import { ArrowUpFromLine } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function Dashboard() {
   const [isPending, startTransition] = useTransition();
+  const [folders, setFolders] = useState<string[]>([]);
   const [disk, setDisk] = useState<Disk | null>(null);
+  
   const selectedDisk = (path: string) => {
     startTransition(() => {
       const load = async () => {
@@ -19,7 +23,25 @@ export function Dashboard() {
       };
       load();
     });
+    addNewFolder(path);
   };
+
+  const addNewFolder = (folder: string) => {
+    setFolders((current) => [...current, folder]);
+  };
+
+  const removeFolder = () => {
+    setFolders((current) => {
+      const newFolders = current.slice(0, -1);
+      if (newFolders.length > 0) {
+        selectedDisk(newFolders[newFolders.length - 1]);
+      } else {
+        setDisk(null); // or handle the root directory as needed
+      }
+      return newFolders;
+    });
+  };
+
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       <Sidbar />
@@ -38,6 +60,13 @@ export function Dashboard() {
             </div>
             <SelectDisk selectDiskPath={selectedDisk} />
           </div>
+          {!isPending && folders.length > 1 && (
+            <div className="flex items-center justify-center">
+              <Button size="icon" onClick={removeFolder}>
+                <ArrowUpFromLine />
+              </Button>
+            </div>
+          )}
           <div className="h-full border border-dashed">
             {isPending ? (
               <Loader />
@@ -46,6 +75,8 @@ export function Dashboard() {
                 {disk.contents.map((opt, i) => (
                   <FileDisplayer
                     key={i}
+                    path={disk.path}
+                    setDisk={selectedDisk}
                     fileName={opt.name}
                     extension={opt.extension}
                     size={opt.size}

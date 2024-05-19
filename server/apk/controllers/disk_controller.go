@@ -94,16 +94,6 @@ func GetDirInfo(c echo.Context, db *gorm.DB) error {
 	if err != nil {
 		return err
 	}
-	disk := modules.Disk{
-		DiskPath: strings.TrimRight(path, "/"),
-	}
-	if err := db.Create(&disk).Error; err != nil {
-		if !strings.Contains(err.Error(), "UNIQUE constraint failed: disks.disk_path") {
-			return err
-		}
-		return c.JSON(http.StatusOK, utility.SuccesRespnse("Fetch Succesfully", resType.GetDirInfo, dirInfo))
-	}
-
 	return c.JSON(http.StatusOK, utility.SuccesRespnse("Fetch Succesfully", resType.GetDirInfo, dirInfo))
 }
 
@@ -115,7 +105,6 @@ func getDirectoryInfo(path string) (*DirectoryInfo, error) {
 			return nil, echo.NewHTTPError(http.StatusBadRequest, "directory not found")
 		}
 		return nil, echo.NewHTTPError(http.StatusInternalServerError, "failed to read directory")
-
 	}
 	// Get disk usage info
 	var stat syscall.Statfs_t
@@ -132,13 +121,14 @@ func getDirectoryInfo(path string) (*DirectoryInfo, error) {
 
 	for _, file := range files {
 		go func(file os.DirEntry) {
+			isDir := file.IsDir()
 			fileInfo, err := file.Info()
 			if err != nil {
 				fileInfoChan <- FileInfo{
 					Name:         file.Name(),
 					Path:         fmt.Sprintf("%s/%s", path, file.Name()),
 					Size:         nil,
-					Extension:    getFileExtension(file.Name(), file.IsDir()),
+					Extension:    getFileExtension(file.Name(), isDir),
 					ModifiedTime: nil,
 				}
 				return
@@ -155,7 +145,7 @@ func getDirectoryInfo(path string) (*DirectoryInfo, error) {
 				Name:         file.Name(),
 				Path:         fmt.Sprintf("%s/%s", path, file.Name()),
 				Size:         &size,
-				Extension:    getFileExtension(file.Name(), file.IsDir()),
+				Extension:    getFileExtension(file.Name(), isDir),
 				ModifiedTime: modifiedTime,
 			}
 		}(file)
@@ -190,10 +180,17 @@ func humanReadableSize(size int64) string {
 	sizeInGB := sizeInMB / 1024
 	return fmt.Sprintf("%.2f GB", sizeInGB)
 }
+
 func getFileExtension(fileName string, isDirectory bool) *string {
 	if isDirectory {
-		return nil
+		folder := "folder"
+		return &folder
 	}
-	return &strings.Split(fileName, ".")[1]
-
+	parts := strings.Split(fileName, ".")
+	if len(parts) > 1 {
+		return &parts[len(parts)-1]
+	}
+	noExt := "noext"
+	return &noExt
 }
+
