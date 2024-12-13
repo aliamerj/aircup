@@ -1,7 +1,5 @@
 # AirCup
 
-## Introduction
-
 AirCup is an open-source cloud storage platform designed to meet the increasing demands for secure, efficient, and user-friendly data management solutions. Built with speed and simplicity in mind, AirCup offers a seamless experience for businesses and individual users, featuring a one-click installation process and an intuitive user interface.
 
 ## Key Features
