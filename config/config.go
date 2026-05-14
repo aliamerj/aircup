@@ -40,6 +40,7 @@ func Parse(importPath string, overrides Config) (*Config, error) {
 		if imported.Addr != "" {
 			cfg.Addr = imported.Addr
 		}
+
 		if imported.Root != "" {
 			cfg.Root = imported.Root
 		}

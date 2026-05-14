@@ -5,6 +5,7 @@ import (
 
 	"github.com/aliamerj/aircup/api"
 	"github.com/aliamerj/aircup/config"
+	"github.com/aliamerj/aircup/network"
 	"github.com/spf13/cobra"
 )
 
@@ -41,11 +42,17 @@ func runServe(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	slog.Info("starting server", "addr", cfg.Addr, "root", cfg.Root)
+	slog.Info("start mDNS", "addr", cfg.Addr)
+	adv, err := network.StartMDNS(cfg.Addr)
+	if err != nil {
+		slog.Error(err.Error())
+		return
+	}
+	defer adv.Close()
 
+	slog.Info("starting server", "addr", cfg.Addr, "root", cfg.Root)
 	if err := api.Run(*cfg); err != nil {
 		slog.Error(err.Error())
 		return
 	}
-
 }
