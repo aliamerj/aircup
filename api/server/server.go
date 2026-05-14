@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/aliamerj/meshstream/api/database"
-	"github.com/aliamerj/meshstream/config"
+	"github.com/aliamerj/aircup/api/database"
+	"github.com/aliamerj/aircup/config"
 )
 
 type Server struct {

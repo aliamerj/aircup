@@ -15,7 +15,7 @@ type Config struct {
 }
 
 const (
-	AppDirName     = "meshstream"
+	AppDirName     = "Aircup"
 	ConfigFileName = "config.json"
 	DefaultAddr    = "0.0.0.0:8080"
 )
@@ -154,4 +154,3 @@ func validate(cfg *Config) error {
 
 	return nil
 }
-

@@ -101,4 +101,3 @@ func (s *service) Close() error {
 	log.Println("Disconnected from database")
 	return s.db.Close()
 }
-

@@ -1,9 +1,9 @@
 openapi: 3.0.3
 info:
-  title: MeshStream API
+  title: Aircup API
   version: 0.1.0
   description: |
-    MeshStream API for browsing and streaming personal files across devices.
+    Aircup API for browsing and streaming personal files across devices.
 
 servers:
   - url: http://localhost:8080
@@ -51,7 +51,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-  
+
   /api/files/content:
     get:
       operationId: getFileContent

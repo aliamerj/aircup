@@ -11,8 +11,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/aliamerj/meshstream/api/server"
-	"github.com/aliamerj/meshstream/config"
+	"github.com/aliamerj/aircup/api/server"
+	"github.com/aliamerj/aircup/config"
 )
 
 func Run(cfg config.Config) error {
@@ -68,6 +68,5 @@ func createDBURL() (string, error) {
 		return "", fmt.Errorf("resolve home dir: %w", err)
 	}
 
-	return filepath.Join(home, ".local", "share", "meshstream", "meshstream.db"), nil
+	return filepath.Join(home, ".local", "share", "Aircup", "aircup.db"), nil
 }
-

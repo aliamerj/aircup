@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/aliamerj/meshstream/api/database"
-	"github.com/aliamerj/meshstream/config"
-	"github.com/aliamerj/meshstream/types"
+	"github.com/aliamerj/aircup/api/database"
+	"github.com/aliamerj/aircup/config"
+	"github.com/aliamerj/aircup/types"
 	"github.com/labstack/echo/v5"
 )
 

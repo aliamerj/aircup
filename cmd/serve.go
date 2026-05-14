@@ -3,8 +3,8 @@ package cmd
 import (
 	"log/slog"
 
-	"github.com/aliamerj/meshstream/api"
-	"github.com/aliamerj/meshstream/config"
+	"github.com/aliamerj/aircup/api"
+	"github.com/aliamerj/aircup/config"
 	"github.com/spf13/cobra"
 )
 
@@ -15,7 +15,7 @@ var (
 
 var serveCmd = &cobra.Command{
 	Use:   "serve [config-file]",
-	Short: "Start the MeshStream server",
+	Short: "Start the Aircup server",
 	Run:   runServe,
 }
 

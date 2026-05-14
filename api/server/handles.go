@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/aliamerj/meshstream/api/handlers"
+	"github.com/aliamerj/aircup/api/handlers"
 	"github.com/labstack/echo/v5"
 )
 

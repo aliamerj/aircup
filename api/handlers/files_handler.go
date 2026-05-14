@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/aliamerj/meshstream/types"
+	"github.com/aliamerj/aircup/types"
 	"github.com/labstack/echo/v5"
 )
 

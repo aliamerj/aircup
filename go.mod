@@ -1,4 +1,4 @@
-module github.com/aliamerj/meshstream
+module github.com/aliamerj/aircup
 
 go 1.25.0
 

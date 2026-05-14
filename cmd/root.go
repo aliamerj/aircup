@@ -7,9 +7,8 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use: "meshstream",
-	Short: `Browse and stream your personal files across devices over a private WireGuard mesh.
-No cloud. No port forwarding. No exposure. Free forever.`,
+	Use:   "Aircup",
+	Short: `Browse and stream your personal files across devices.`,
 }
 
 func Execute() {
