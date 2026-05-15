@@ -1,10 +1,13 @@
 package server
 
 import (
+	"io/fs"
 	"net/http"
 
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
+
+	airweb "github.com/aliamerj/aircup/web"
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
@@ -21,6 +24,22 @@ func (s *Server) RegisterRoutes() http.Handler {
 	}))
 
 	s.CreateRoutes(e)
+
+	distFS, err := fs.Sub(airweb.FS, "dist")
+	if err != nil {
+		panic(err)
+	}
+
+	assetsFS, err := fs.Sub(distFS, "assets")
+	if err != nil {
+		panic(err)
+	}
+
+	e.StaticFS("/assets", assetsFS)
+
+	e.GET("/*", func(c *echo.Context) error {
+		return c.FileFS("index.html", distFS)
+	})
 
 	return e
 }
