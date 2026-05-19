@@ -30,6 +30,7 @@ func init() {
 }
 
 func runServe(cmd *cobra.Command, args []string) {
+	ctx := cmd.Context()
 	importPath := ""
 	if len(args) == 1 {
 		importPath = args[0]
@@ -39,6 +40,7 @@ func runServe(cmd *cobra.Command, args []string) {
 		Addr: serveAddr,
 		Root: serveRoot,
 	})
+
 	if err != nil {
 		slog.Error(err.Error())
 		return
@@ -52,7 +54,22 @@ func runServe(cmd *cobra.Command, args []string) {
 	}
 	defer adv.Close()
 
-	sharedUrl, err := network.ShareURL(cmd.Context())
+	if cfg.RelayURL != "" {
+		relayClient, err := network.ConnectRelay(ctx, cfg.RelayURL)
+		if err != nil {
+			slog.Error("Failed to connected to Relay server", "err", err.Error())
+			return
+		} else {
+			defer relayClient.Close()
+		}
+
+		if err := relayClient.SendHello(ctx, cfg); err != nil {
+			slog.Error(err.Error())
+			return
+		}
+	}
+
+	sharedUrl, err := network.ShareURL(ctx)
 	if err != nil {
 		slog.Error(err.Error())
 		return

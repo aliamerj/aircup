@@ -1,6 +1,8 @@
 package config
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,8 +12,11 @@ import (
 )
 
 type Config struct {
-	Addr string `json:"addr"`
-	Root string `json:"root"`
+	Addr     string `json:"addr"`
+	Root     string `json:"root"`
+	RelayURL string `json:"relay_url"`
+	NodeID   string `json:"node_Id"`
+	Name     string `json:"name"`
 }
 
 const (
@@ -37,21 +42,9 @@ func Parse(importPath string, overrides Config) (*Config, error) {
 			return nil, err
 		}
 
-		if imported.Addr != "" {
-			cfg.Addr = imported.Addr
-		}
-
-		if imported.Root != "" {
-			cfg.Root = imported.Root
-		}
+		cfg.setup(imported)
 	}
-
-	if overrides.Addr != "" {
-		cfg.Addr = overrides.Addr
-	}
-	if overrides.Root != "" {
-		cfg.Root = overrides.Root
-	}
+	cfg.setup(&overrides)
 
 	if err := validate(cfg); err != nil {
 		return nil, err
@@ -89,7 +82,6 @@ func loadOrCreate(path string) (*Config, bool, error) {
 
 	cfg := Config{
 		Addr: DefaultAddr,
-		Root: "",
 	}
 
 	if err := save(path, &cfg); err != nil {
@@ -154,4 +146,37 @@ func validate(cfg *Config) error {
 	_ = ln.Close()
 
 	return nil
+}
+
+func (c *Config) setup(cfg *Config) {
+	if cfg.Addr != "" {
+		c.Addr = cfg.Addr
+	}
+	if cfg.Root != "" {
+		c.Root = cfg.Root
+	}
+	if cfg.RelayURL != "" {
+		c.RelayURL = cfg.RelayURL
+	}
+	if c.NodeID == "" {
+		c.NodeID = GenerateShortID(8)
+	}
+	if c.Name == "" {
+		c.Name = getDeviceName()
+	}
+}
+
+func GenerateShortID(length int) string {
+	b := make([]byte, length)
+	rand.Read(b)
+	return base64.RawURLEncoding.EncodeToString(b)[:length]
+}
+
+func getDeviceName() string {
+	name, err := os.Hostname()
+	if err != nil {
+		return "Sharing-Device"
+	}
+
+	return name
 }
